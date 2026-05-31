@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyecto Final Universidad</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- React + Babel via CDN -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:           #F8F7F4;
+            --surface:      #FFFFFF;
+            --primary:      #185FA5;
+            --primary-mid:  #378ADD;
+            --primary-light:#E6F1FB;
+            --accent:       #0F6E56;
+            --accent-light: #E1F5EE;
+            --purple:       #533AB7;
+            --purple-light: #EEEDFE;
+            --text:         #2C2C2A;
+            --muted:        #5F5E5A;
+            --border:       rgba(44,44,42,0.12);
+            --border-strong:rgba(44,44,42,0.25);
+            --danger:       #A32D2D;
+            --danger-light: #FCEBEB;
+            --success:      #3B6D11;
+            --success-light:#EAF3DE;
+        }
+
+        html, body, #root {
+            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        #root {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ── Inputs ── */
+        input, select, textarea {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-mid);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        textarea { resize: vertical; min-height: 90px; }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .field { margin-bottom: 18px; }
+
+        /* ── Botones ── */
+        button { font-family: 'DM Sans', sans-serif; cursor: pointer; border: none; transition: all 0.18s; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 12px 28px;
+            border-radius: 8px;
+        }
+        .btn-primary:hover  { background: var(--primary-mid); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: var(--bg); border-color: var(--border-strong); }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            padding: 24px 28px;
+        }
+
+        /* ── Section label ── */
+        .section-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--primary-mid);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary-light);
+        }
+
+        /* ── Grid 2 cols ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            animation: slideUp 0.25s ease;
+        }
+        .toast-success { background: var(--success-light); color: var(--success); border: 1px solid #C0DD97; }
+        .toast-error   { background: var(--danger-light);  color: var(--danger);  border: 1px solid #F09595; }
+
+        /* ── Animaciones ── */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .view-enter { animation: fadeIn 0.3s ease; }
+
+        /* ── Acciones footer ── */
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        /* ── Loading ── */
+        .loading-text {
+            text-align: center;
+            padding: 60px 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const API_BASE = "";  // Mismo origen que Spring Boot
+
+    // ── Toast ──────────────────────────────────────────────────────────────────
+    function Toast({ msg, type }) {
+        if (!msg) return null;
+        return <div className={`toast toast-${type}`}>{msg}</div>;
+    }
+
+    function useToast() {
+        const [toast, setToast] = useState(null);
+        const show = (msg, type = "success") => {
+            setToast({ msg, type });
+            setTimeout(() => setToast(null), 3000);
+        };
+        return [toast, show];
+    }
+
+    // ── Header ─────────────────────────────────────────────────────────────────
+    function Header({ title, onBack }) {
+        return (
+            <div style={{ display:"flex", alignItems:"center", gap:16, padding:"28px 28px 0", marginBottom:28 }}>
+                {onBack && (
+                    <button className="btn-secondary" onClick={onBack}>← Volver</button>
+                )}
+                <h1 style={{
+                    fontFamily:"'DM Serif Display', serif",
+                    fontSize:26, fontWeight:400,
+                    color:"var(--text)", letterSpacing:"-0.02em"
+                }}>
+                    {title}
+                </h1>
+            </div>
+        );
+    }
+
+    // ── SectionLabel ───────────────────────────────────────────────────────────
+    function SectionLabel({ text }) {
+        return <p className="section-label">{text}</p>;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // VISTA 1 — MENÚ
+    // ══════════════════════════════════════════════════════════════════════════
+    function MenuView({ onNavigate }) {
+        const items = [
+            {
+                key: "estudiante",
+                label: "Datos del Estudiante",
+                desc: "Información personal y académica",
+                icon: "👤",
+                color: "var(--primary)",
+                light: "var(--primary-light)",
+            },
+            {
+                key: "proyecto",
+                label: "Datos del Proyecto",
+                desc: "Título, objetivo, resultado y costo",
+                icon: "📋",
+                color: "var(--accent)",
+                light: "var(--accent-light)",
+            },
+            {
+                key: "docentes",
+                label: "Datos de los Docentes",
+                desc: "Información de los docentes a cargo",
+                icon: "🎓",
+                color: "var(--purple)",
+                light: "var(--purple-light)",
+            },
+        ];
+
+        return (
+            <div className="view-enter" style={{ minHeight:"100vh", display:"flex", flexDirection:"column" }}>
+                <div style={{ padding:"36px 28px 0" }}>
+                    <p style={{
+                        fontFamily:"'DM Serif Display', serif",
+                        fontSize:13, letterSpacing:"0.12em", textTransform:"uppercase",
+                        color:"var(--muted)", marginBottom:6
+                    }}>
+                        Sistema de Gestión
+                    </p>
+                    <h1 style={{
+                        fontFamily:"'DM Serif Display', serif",
+                        fontSize:38, fontWeight:400,
+                        color:"var(--text)", letterSpacing:"-0.03em",
+                        lineHeight:1.1, marginBottom:6
+                    }}>
+                        Menú Principal
+                    </h1>
+                    <div style={{ width:48, height:3, background:"var(--primary-mid)", borderRadius:2, marginBottom:36 }} />
+                </div>
+
+                <div style={{ flex:1, display:"flex", flexDirection:"column", gap:16, padding:"0 28px 36px" }}>
+                    {items.map(item => (
+                        <button
+                            key={item.key}
+                            onClick={() => onNavigate(item.key)}
+                            style={{
+                                flex:1,
+                                display:"flex", alignItems:"center", gap:20,
+                                background:"var(--surface)",
+                                border:"1px solid var(--border)",
+                                borderRadius:14,
+                                padding:"24px 28px",
+                                textAlign:"left",
+                                cursor:"pointer",
+                                transition:"all 0.2s",
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.borderColor = item.color;
+                                e.currentTarget.style.background   = item.light;
+                                e.currentTarget.style.transform    = "translateX(4px)";
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.borderColor = "var(--border)";
+                                e.currentTarget.style.background   = "var(--surface)";
+                                e.currentTarget.style.transform    = "translateX(0)";
+                            }}
+                        >
+                            <div style={{
+                                width:56, height:56, borderRadius:12,
+                                background:item.light,
+                                border:`1px solid ${item.color}33`,
+                                display:"flex", alignItems:"center", justifyContent:"center",
+                                fontSize:26, flexShrink:0
+                            }}>
+                                {item.icon}
+                            </div>
+                            <div style={{ flex:1 }}>
+                                <p style={{ fontSize:18, fontWeight:600, color:"var(--text)", marginBottom:3 }}>
+                                    {item.label}
+                                </p>
+                                <p style={{ fontSize:13, color:"var(--muted)" }}>
+                                    {item.desc}
+                                </p>
+                            </div>
+                            <span style={{ fontSize:20, color:"var(--muted)" }}>›</span>
+                        </button>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // VISTA 2 — DATOS DEL PROYECTO
+    // ══════════════════════════════════════════════════════════════════════════
+    function ProyectoView({ onBack }) {
+        const [proyecto, setProyecto] = useState({
+            titulo: "",
+            objetivo: "",
+            alcance: "",
+            costo: ""
+        });
+        const [loading, setLoading] = useState(false);
+        const [toast, showToast]    = useToast();
+
+        useEffect(() => {
+
+            fetch(`${API_BASE}/api/v1/proyectos`)
+                .then(res => res.json())
+                .then(proyectos => {
+
+                    if (proyectos.length > 0) {
+
+                        const proyecto = proyectos[0];
+
+                        setProyecto({
+                            titulo: proyecto.titulo || "",
+                            objetivo: proyecto.objetivo || "",
+                            alcance: proyecto.alcance || "",
+                            costo: proyecto.costo || ""
+                        });
+                    }
+                })
+                .catch(console.error);
+
+        }, []);
+
+        return (
+            <div className="view-enter" style={{ minHeight:"100vh", paddingBottom:40 }}>
+                <Header title="Datos del Proyecto" onBack={onBack} />
+                <Toast msg={toast?.msg} type={toast?.type} />
+
+                <div style={{ padding:"0 28px" }}>
+                    {loading ? (
+                        <p className="loading-text">Cargando datos del proyecto…</p>
+                    ) : (
+                        <div className="card">
+                            <SectionLabel text="Información General" />
+
+                            <div className="field">
+                                <label>Título del Proyecto</label>
+                                <input
+                                    type="text"
+                                    value={proyecto.titulo}
+                                    readOnly                                />
+                            </div>
+
+                            <div className="field">
+                                <label>Objetivo</label>
+                                <textarea
+                                    placeholder="Describí el objetivo principal del proyecto"
+                                    value={proyecto.objetivo}
+                                    readOnly                                />
+                            </div>
+
+                            <div className="field">
+                                <label>Resultado Esperado</label>
+                                <textarea
+                                    placeholder="¿Cuál es el resultado esperado?"
+                                    value={proyecto.alcance}
+                                    readOnly                                />
+                            </div>
+
+                            <div className="field" style={{ marginBottom:28 }}>
+                                <label>Costo Estimado ($)</label>
+                                <input
+                                    type="number"
+                                    placeholder="0.00"
+                                    value={proyecto.costo}
+                                    readOnly
+                                    style={{ maxWidth:220 }}
+                                />
+                            </div>
+
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // VISTA 3 — DATOS DE LOS DOCENTES
+    // ══════════════════════════════════════════════════════════════════════════
+    function DocentesView({ onBack }) {
+        const empty = { nombre:"", apellido:"", conocimiento:"" };
+        const [docentes, setDocentes] = useState([{ ...empty }, { ...empty }]);
+        const [toast, showToast]      = useToast();
+
+        const themes = [
+            { color:"var(--primary)", light:"var(--primary-light)", label:"Docente 1" },
+            { color:"var(--purple)",  light:"var(--purple-light)",  label:"Docente 2" },
+        ];
+
+        useEffect(() => {
+            fetch(`${API_BASE}/api/v1/docentes`)
+                .then(res => res.json())
+                .then(data => {
+                    setDocentes(data);
+                })
+                .catch(console.error);
+        }, []);
+        return (
+            <div className="view-enter" style={{ minHeight:"100vh", paddingBottom:40 }}>
+                <Header title="Datos de los Docentes" onBack={onBack} />
+                <Toast msg={toast?.msg} type={toast?.type} />
+
+                <div style={{ padding:"0 28px", display:"flex", flexDirection:"column", gap:20 }}>
+                    {docentes.map((doc, idx) => {
+                        const t = themes[idx];
+                        return (
+                            <div className="card" key={idx}>
+                                <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:20 }}>
+                                    <div style={{
+                                        width:42, height:42, borderRadius:10,
+                                        background:t.light,
+                                        border:`1px solid ${t.color}33`,
+                                        display:"flex", alignItems:"center", justifyContent:"center",
+                                        fontSize:20
+                                    }}>
+                                        🎓
+                                    </div>
+                                    <p style={{
+                                        fontFamily:"'DM Serif Display', serif",
+                                        fontSize:18, fontWeight:400, color:"var(--text)"
+                                    }}>
+                                        {t.label}
+                                    </p>
+                                </div>
+
+                                <div className="grid-2">
+                                    <div className="field" style={{ marginBottom:0 }}>
+                                        <label>Nombre</label>
+                                        <input
+                                            type="text"
+                                            value={doc.nombre || ""}
+                                            readOnly                                       />
+                                    </div>
+                                    <div className="field" style={{ marginBottom:0 }}>
+                                        <label>Apellido</label>
+                                        <input
+                                            type="text"
+                                            value={doc.apellido || ""}
+                                            readOnly                                       />
+                                    </div>
+                                </div>
+
+                                <div className="field" style={{ marginTop:16, marginBottom:0 }}>
+                                    <label>Área de Conocimiento</label>
+                                    <input
+                                        type="text"
+                                        value={doc.conocimiento || ""}
+                                        readOnly                                  />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // VISTA 4 — DATOS DEL ESTUDIANTE
+    // ══════════════════════════════════════════════════════════════════════════
+    function EstudianteView({ onBack }) {
+        const [data, setData] = useState({
+            nombre:"",
+            apellido:"",
+            dni:"",
+            universidad:"",
+            necesidad1:"",
+            necesidad2:""
+        });
+        const [universidad, setUniversidad] = useState({
+            nombre: "",
+            cunaDelConocimiento: "",
+            diferentesCarreras: ""
+        });
+        const [necesidades, setNecesidades] = useState([]);
+        const [loading, setLoading] = useState(true);
+        const [toast, showToast]  = useToast();
+
+        useEffect(() => {
+            fetch(`${API_BASE}/api/v1/estudiantes`)
+                .then(res => res.json())
+                .then(estudiantes => {
+
+                    if (estudiantes.length > 0) {
+
+                        const estudiante = estudiantes[0];
+
+                        setData({
+                            nombre: estudiante.nombre || "",
+                            apellido: estudiante.apellido || "",
+                            dni: estudiante.dni || "",
+                            universidad: "",
+                            necesidad1: "",
+                            necesidad2: ""
+                        });
+                    }
+
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error(error);
+                    setLoading(false);
+                });
+        }, []);
+        useEffect(() => {
+
+            fetch(`${API_BASE}/api/v1/universidad`)
+                .then(res => res.json())
+                .then(universidades => {
+
+                    if (universidades.length > 0) {
+
+                        const uni = universidades[0];
+
+                        setUniversidad({
+                            nombre: uni.nombre || "",
+                            cunaDelConocimiento: uni.cunaDelConocimiento || "",
+                            diferentesCarreras: uni.diferentesCarreras || ""
+                        });
+                    }
+                })
+                .catch(console.error);
+
+        }, []);
+        useEffect(() => {
+
+            fetch(`${API_BASE}/api/v1/necesidades`)
+                .then(res => res.json())
+                .then(data => {
+                    setNecesidades(data);
+                })
+                .catch(console.error);
+
+        }, []);
+
+        if (loading) {
+            return (
+                <div>
+                    <Header
+                        title="Datos del Estudiante"
+                        onBack={onBack}
+                    />
+                    <p className="loading-text">
+                        Cargando estudiante...
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div className="view-enter" style={{ minHeight:"100vh", paddingBottom:40 }}>
+                <Header title="Datos del Estudiante" onBack={onBack} />
+                <Toast msg={toast?.msg} type={toast?.type} />
+
+                <div style={{ padding:"0 28px", display:"flex", flexDirection:"column", gap:20 }}>
+
+                    {/* Información personal */}
+                    <div className="card">
+                        <SectionLabel text="Información Personal" />
+                        <div className="grid-2">
+                            <div className="field" style={{ marginBottom:0 }}>
+                                <label>Nombre</label>
+                                <input
+                                    type="text"
+                                    value={data.nombre}
+                                    readOnly                                />
+                            </div>
+                            <div className="field" style={{ marginBottom:0 }}>
+                                <label>Apellido</label>
+                                <input
+                                    type="text"
+                                    value={data.apellido}
+                                    readOnly
+                                />
+                            </div>
+                        </div>
+                        <div className="field" style={{ marginTop:16, marginBottom:0 }}>
+                            <label>DNI</label>
+                            <input
+                                type="text"
+                                value={data.dni}
+                                readOnly
+                                style={{ maxWidth:220 }}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Información académica */}
+                    <div className="card">
+                        <SectionLabel text="Información Académica" />
+                        <div className="field" style={{ marginBottom:0 }}>
+                            <label>Universidad</label>
+                            <input
+                                type="text"
+                                value={universidad.nombre}
+                                readOnly
+                            />
+                        </div>
+                    </div>
+
+                    {/* Necesidades insatisfechas */}
+                    <div className="card">
+                        <SectionLabel text="Necesidades Insatisfechas" />
+                        <div className="field">
+                            <label>Necesidad 1</label>
+                            <textarea
+                                value={necesidades[0]?.definir || ""}
+                                readOnly
+                            />
+                        </div>
+                        <div className="field" style={{ marginBottom:0 }}>
+                            <label>Necesidad 2</label>
+                            <textarea
+                                value={necesidades[1]?.definir || ""}
+                                readOnly
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // ROOT APP
+    // ══════════════════════════════════════════════════════════════════════════
+    function App() {
+        const [view, setView] = useState("menu");
+
+        return (
+            <>
+                {view === "menu"       && <MenuView      onNavigate={setView} />}
+                {view === "proyecto"   && <ProyectoView  onBack={() => setView("menu")} />}
+                {view === "docentes"   && <DocentesView  onBack={() => setView("menu")} />}
+                {view === "estudiante" && <EstudianteView onBack={() => setView("menu")} />}
+            </>
+        );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+</script>
+</body>
+</html>
