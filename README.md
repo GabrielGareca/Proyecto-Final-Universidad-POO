@@ -20,3 +20,6 @@ CREATE DATABASE estudiante_springboot;
     Colocar el usuario y la contraseña correctos
 
 3. Ejecutar la aplicación.
+
+### Para más detalles ver el archivo de documentación
+en este se explica un poco el proyecto
