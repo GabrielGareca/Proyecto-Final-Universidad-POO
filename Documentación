@@ -1,0 +1,139 @@
+Proyecto Final Universidad
+Descripción General
+
+Proyecto Final Universidad es una aplicación web orientada a la gestión y visualización de información relacionada con proyectos de grado universitarios.
+
+El sistema permite consultar de manera centralizada:
+
+Información del estudiante.
+Información del proyecto de grado.
+Información de los docentes involucrados.
+Universidad asociada.
+Necesidades identificadas dentro del proyecto.
+
+La aplicación fue desarrollada con una arquitectura en capas utilizando Spring Boot para el backend y una interfaz web desarrollada con HTML, CSS, JavaScript y React para el frontend.
+
+El objetivo principal es disponer de una plataforma simple para visualizar información académica almacenada en una base de datos relacional.
+
+Objetivos del Sistema
+
+El sistema busca:
+
+Centralizar la información de proyectos universitarios.
+Facilitar la consulta de estudiantes y docentes.
+Mostrar datos académicos desde una base de datos persistente.
+Mantener una arquitectura organizada y escalable.
+Proveer una interfaz sencilla de navegación.
+Aprobar la entrega.
+
+Flujo de Trabajo
+1. Inicio de la aplicación
+
+Cuando se ejecuta Spring Boot:
+
+Se inicia el servidor web embebido.
+Se establece la conexión con MySQL.
+Hibernate genera o actualiza las tablas necesarias.
+Se ejecuta la clase CargaDatos.
+Si la base de datos está vacía:
+Se crea un proyecto de grado.
+Se crea un estudiante.
+Se crea una universidad.
+Se crean dos necesidades.
+Se crean dos docentes.
+Los datos quedan almacenados permanentemente en la base de datos.
+
+2. Apertura de la interfaz
+
+Al ingresar al sistema:
+En el puerto: 
+http://localhost:8080
+
+se carga automáticamente:
+
+index.html
+
+y se abre automáticamente mostrando el menú principal.
+
+3. Consulta de información
+
+El usuario puede navegar entre:
+
+Datos del Estudiante
+
+Obtiene información desde:
+
+GET /api/v1/estudiantes
+GET /api/v1/universidad
+GET /api/v1/necesidades
+
+y muestra:
+
+Nombre
+Apellido
+DNI
+Universidad
+Necesidad 1
+Necesidad 2
+Datos del Proyecto
+
+Obtiene información desde:
+
+GET /api/v1/proyectos
+
+y muestra:
+
+Título
+Objetivo
+Alcance
+Costo
+Datos de los Docentes
+
+Obtiene información desde:
+
+GET /api/v1/docentes
+
+y muestra:
+
+Nombre
+Apellido
+Área de conocimiento
+Arquitectura Utilizada
+
+El proyecto implementa una arquitectura por capas como hemos estado viendo en el cursado.
+
+Estructura del Proyecto
+src
+│
+├── main
+│   │
+│   ├── java
+│   │   │
+│   │   └── com.example.demo
+│   │       │
+│   │       ├── Config
+│   │       ├── Controlador
+│   │       ├── Modelo
+│   │       ├── Repositorio
+│   │       ├── Servicios
+│   │       └── Main
+│   │
+│   └── resources
+│       │
+│       ├── static
+│       │   └── index.html
+│       │
+│       ├── templates
+│       │
+│       └── application.properties
+│
+└── test
+
+Resultado Esperado
+
+Al iniciar el sistema por primera vez:
+
+Se cargan automáticamente datos de ejemplo.
+El usuario puede navegar entre las tres vistas.
+Toda la información mostrada proviene de la base de datos mediante endpoints REST.
+No es necesario ingresar datos manualmente para probar el funcionamiento del sistema.
